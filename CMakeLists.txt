@@ -24,7 +24,7 @@ find_package(OpenGL REQUIRED)
 
 #TODO - have to add linux and win32 dependencies
 if (${APPLE})
-    SET(GLFW_LIBRARY glfw)
+    SET(GLFW_LIBRARY glfw.3.2)
     SET(ASSIMP_LIBRARY assimpd)
     SET(PLATFORM macos)
 
