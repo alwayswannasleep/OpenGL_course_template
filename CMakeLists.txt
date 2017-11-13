@@ -6,7 +6,6 @@ project(
 )
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} __gl_h_)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(STATUS "Detected 64 bit platform")
@@ -53,11 +52,14 @@ if (GLEW_LIBRARY)
     link_directories(third_party/glew/lib/${PLATFORM})
 endif ()
 
+add_definitions(-DGL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED)
+
 add_library(${STB_IMAGE_LIBRARY} third_party/stb_image/stb_image.cpp)
 
 include_directories(
         ${OPENGL_INCLUDE_DIR}
         third_party/glfw/include
+        third_party/glfw/include/glfw
         third_party/glm/
         third_party/glm/glm # required by glm library
         third_party/assimp/include

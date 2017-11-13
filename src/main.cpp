@@ -1,5 +1,5 @@
 #include <glwrapper.h>
-#include <glfw/glfw3.h>
+#include "glfw3.h"
 #include <thread>
 #include <iostream>
 #include "ShadersLoader.h"
