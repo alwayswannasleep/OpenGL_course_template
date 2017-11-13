@@ -62,6 +62,7 @@ include_directories(
         third_party/glm/glm # required by glm library
         third_party/assimp/include
         third_party/stb_image
+        third_party/gl
 )
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
