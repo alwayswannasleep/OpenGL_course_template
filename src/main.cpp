@@ -27,7 +27,7 @@ int main() {
 #ifndef __APPLE__
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
-        LOGM("Error initializing glew. Exiting.\n");
+        std::cerr << "Error initializing glew. Exiting.\n";
         return -1;
     }
 #endif
@@ -82,13 +82,13 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    float coor[] = {
+    GLfloat coor[] = {
             0.0f, 0.5f,
             -0.7f, -0.7f,
             0.7f, -0.7f
     };
 
-    uint indexes[] = {
+    GLuint indexes[] = {
             1, 2, 0
     };
 
@@ -103,12 +103,12 @@ int main() {
     glBindVertexArray(vertexArray);
 
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, coor, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6, coor, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, 0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 3, indexes, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 3, indexes, GL_STATIC_DRAW);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
