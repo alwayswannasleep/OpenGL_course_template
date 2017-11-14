@@ -33,7 +33,6 @@ int main() {
 #endif
 
     auto vertexSource = shaders::loadShaderSourceFromFile("resources/shaders/vertex.glsl").c_str();
-    auto fragmentSource = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl").c_str();
 
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -47,6 +46,8 @@ int main() {
         std::cerr << "ERROR::SHADER LINK_FAILED\n" << info;
         return 0;
     }
+
+    auto fragmentSource = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl").c_str();
 
     auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
@@ -74,19 +75,20 @@ int main() {
         std::cerr << fragmentSource << std::endl;
 
         glDeleteProgram(program);
+        glfwTerminate();
         return 0;
     }
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    auto coor = new float[6]{
+    float coor[] = {
             0.0f, 0.5f,
             -0.7f, -0.7f,
             0.7f, -0.7f
     };
 
-    auto indexes = new uint[3]{
+    uint indexes[] = {
             1, 2, 0
     };
 
