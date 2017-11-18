@@ -48,6 +48,7 @@ int main() {
         std::cerr << info << std::endl;
     }
 
+    stbi_set_flip_vertically_on_load(GL_TRUE);
 
     auto sourceFromFileFragment = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl");
     auto fragmentShaderCode = sourceFromFileFragment.c_str();
