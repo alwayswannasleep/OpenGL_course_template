@@ -33,7 +33,8 @@ int main() {
     }
 #endif
 
-    auto vertexShaderCode = shaders::loadShaderSourceFromFile("resources/shaders/vertex.glsl").c_str();
+    auto sourceFromFileVertex = shaders::loadShaderSourceFromFile("resources/shaders/vertex.glsl");
+    auto vertexShaderCode = sourceFromFileVertex.c_str();
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderCode, nullptr);
     glCompileShader(vertexShader);
@@ -48,7 +49,8 @@ int main() {
     }
 
 
-    auto fragmentShaderCode = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl").c_str();
+    auto sourceFromFileFragment = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl");
+    auto fragmentShaderCode = sourceFromFileFragment.c_str();
     auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderCode, nullptr);
     glCompileShader(fragmentShader);
