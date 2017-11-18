@@ -4,35 +4,37 @@
 #include <iostream>
 #include "ShadersLoader.h"
 
-int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+GLuint createVao(const GLfloat *vertexData, const GLsizei &dataSize, const GLuint *indexes, const GLsizei &indexesSize) {
+    GLuint buffer;
+    glGenBuffers(1, &buffer);
 
-    auto window = glfwCreateWindow(1280, 720, "OpenGL", NULL, NULL);
+    GLuint elements;
+    glGenBuffers(1, &elements);
 
-    if (window == NULL) {
-        std::cerr << "Can not create glfw window! \n";
-        glfwTerminate();
-        return -1;
-    }
+    GLuint vertexArray;
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
 
-    int width;
-    int height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glfwMakeContextCurrent(window);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, dataSize, vertexData, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, 0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, reinterpret_cast<void *>(sizeof(GLfloat) * 2));
+    glEnableVertexAttribArray(1);
 
-#ifndef __APPLE__
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "Error initializing glew. Exiting.\n";
-        return -1;
-    }
-#endif
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexesSize, indexes, GL_STATIC_DRAW);
 
-    auto vertexSource = shaders::loadShaderSourceFromFile("resources/shaders/vertex.glsl").c_str();
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    return vertexArray;
+}
+
+GLuint buildProgram(const char *vertex, const char *fragment) {
+    auto shaderSourceFromFileVertex = shaders::loadShaderSourceFromFile(vertex);
+    auto vertexSource = shaderSourceFromFileVertex.c_str();
 
     auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
@@ -47,7 +49,8 @@ int main() {
         return 0;
     }
 
-    auto fragmentSource = shaders::loadShaderSourceFromFile("resources/shaders/fragment.glsl").c_str();
+    auto shaderSourceFromFileFragment = shaders::loadShaderSourceFromFile(fragment);
+    auto fragmentSource = shaderSourceFromFileFragment.c_str();
 
     auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
@@ -82,39 +85,101 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    GLfloat coor[] = {
-            0.0f, 0.5f,
-            -0.7f, -0.7f,
-            0.7f, -0.7f
+    return program;
+}
+
+int main() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    auto window = glfwCreateWindow(1280, 720, "OpenGL", NULL, NULL);
+
+    if (window == NULL) {
+        std::cerr << "Can not create glfw window! \n";
+        glfwTerminate();
+        return -1;
+    }
+
+    int width;
+    int height;
+    glfwGetFramebufferSize(window, &width, &height);
+    glfwMakeContextCurrent(window);
+
+#ifndef __APPLE__
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK) {
+        std::cerr << "Error initializing glew. Exiting.\n";
+        return -1;
+    }
+#endif
+
+    auto program = buildProgram("resources/shaders/vertex.glsl", "resources/shaders/fragment.glsl");
+    auto programCircle = buildProgram("resources/shaders/vertex_circle.glsl", "resources/shaders/fragment_circle.glsl");
+
+    GLfloat bodyData[] = {
+            0.0f, 0.4f, 0.3f, 0.4f, 1.0f,
+            -0.3f, -0.4f, 0.3f, 0.4f, 1.0f,
+            0.3f, -0.4f, 0.3f, 0.4f, 1.0f
     };
 
-    GLuint indexes[] = {
+    GLuint bodyIndexes[] = {
             1, 2, 0
     };
 
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
+    GLfloat armsLegsData[] = {
+            // Left arm
+            -0.038f, 0.3f, 1.0f, 0.95f, 0.55f,
+            -0.18f, 0.25f, 1.0f, 0.95f, 0.55f,
+            -0.055f, 0.25f, 1.0f, 0.95f, 0.55f,
+            -0.18f, 0.3f, 1.0f, 0.95f, 0.55f,
+            // Right arm
+            0.038f, 0.3f, 1.0f, 0.95f, 0.55f,
+            0.18f, 0.25f, 1.0f, 0.95f, 0.55f,
+            0.055f, 0.25f, 1.0f, 0.95f, 0.55f,
+            0.18f, 0.3f, 1.0f, 0.95f, 0.55f,
+            // Left leg
+            -0.24f, -0.56f, 1.0f, 0.95f, 0.55f,
+            -0.16f, -0.4f, 1.0f, 0.95f, 0.55f,
+            -0.24f, -0.4f, 1.0f, 0.95f, 0.55f,
+            -0.16f, -0.56f, 1.0f, 0.95f, 0.55f,
+            // Right leg
+            0.24f, -0.56f, 1.0f, 0.95f, 0.55f,
+            0.16f, -0.4f, 1.0f, 0.95f, 0.55f,
+            0.24f, -0.4f, 1.0f, 0.95f, 0.55f,
+            0.16f, -0.56f, 1.0f, 0.95f, 0.55f,
+    };
 
-    GLuint elements;
-    glGenBuffers(1, &elements);
+    GLuint armsLegsIndexes[] = {
+            1, 0, 3,
+            1, 2, 0,
 
-    GLuint vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
+            6, 7, 4,
+            6, 5, 7,
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6, coor, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, 0);
-    glEnableVertexAttribArray(0);
+            8, 9, 10,
+            8, 11, 9,
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 3, indexes, GL_STATIC_DRAW);
+            12, 13, 14,
+            12, 15, 13
+    };
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    GLfloat headData[] = {
+            0.0f, 0.5f, 1.0f, 0.95f, 0.55f
+    };
+
+    GLuint headIndexes[] = {
+            0
+    };
+
+    GLuint bodyVao = createVao(bodyData, sizeof(bodyData), bodyIndexes, sizeof(bodyIndexes));
+    GLuint armsLegsVao = createVao(armsLegsData, sizeof(armsLegsData), armsLegsIndexes, sizeof(armsLegsIndexes));
+    GLuint headVao = createVao(headData, sizeof(headData), headIndexes, sizeof(headIndexes));
 
     glViewport(0, 0, width, height);
+    glPointSize(150);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -123,8 +188,18 @@ int main() {
 
         glUseProgram(program);
 
-        glBindVertexArray(vertexArray);
+        glBindVertexArray(bodyVao);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(armsLegsVao);
+        glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+
+        glUseProgram(programCircle);
+
+        glUniform2f(glGetUniformLocation(programCircle, "uResolution"), width, height);
+
+        glBindVertexArray(headVao);
+        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         std::this_thread::sleep_for(std::chrono::nanoseconds(15000));

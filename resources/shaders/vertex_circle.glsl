@@ -4,8 +4,10 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 colorIn;
 
 out vec3 vertexColor;
+out vec4 pos;
 
 void main() {
     vertexColor = colorIn;
-    gl_Position = vec4(position, 1.0);
+    pos = vec4(position, 1.0);
+    gl_Position = pos;
 }
