@@ -4,6 +4,8 @@
 #include <iostream>
 #include "ShadersLoader.h"
 #include <stb_image.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int main() {
     glfwInit();
@@ -85,23 +87,53 @@ int main() {
     glDeleteShader(fragmentShader);
 
     GLfloat coordinates[] = {
-            -0.9f, 0.9f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-            0.9f, 0.9f,  1.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-            0.9f, -0.9f,  1.0f, 0.0f, 1.0f,  1.0f, 0.0f,
-            -0.9f, -0.9f,  0.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-    };
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    GLubyte indexes[] = {
-            3, 2, 1,
-            3, 1, 0
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
     GLuint vbo;
-    GLuint ebo;
     GLuint vao;
 
     glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
     glGenVertexArrays(1, &vao);
 
     glBindVertexArray(vao);
@@ -109,16 +141,10 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(coordinates), coordinates, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 7, reinterpret_cast<void *>(sizeof(GLfloat) * 0));
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 7, reinterpret_cast<void *>(sizeof(GLfloat) * 2));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 7, reinterpret_cast<void *>(sizeof(GLfloat) * 5));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, reinterpret_cast<void *>(sizeof(GLfloat) * 0));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, reinterpret_cast<void *>(sizeof(GLfloat) * 3));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes), indexes, GL_STATIC_DRAW);
-
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -149,9 +175,6 @@ int main() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    textureWidth;
-    textureHeight;
-    textureChannelsCount;
     data = stbi_load("resources/texture.jpeg", &textureWidth, &textureHeight, &textureChannelsCount, STBI_rgb);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -159,13 +182,25 @@ int main() {
 
     stbi_image_free(data);
 
+    auto projectionMatrix = glm::perspective(glm::radians(45.0f),  ((float) width / (float) height), 0.01f, 100.0f);
+//    auto projectionMatrix = glm::ortho(-3.2f, 3.2f, -1.8f, 1.8f, 0.01f, 100.0f);
+    glm::mat4 modelMatrix(1);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f,0.0f, -5.0f));
+
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        auto tmp = glm::rotate(modelMatrix, (float) (glm::radians(30.0f) * glfwGetTime()), glm::vec3(0.4f, 0.4f, 1.0f));
 
         glUseProgram(program);
+
+        glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"),1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"),1, GL_FALSE, glm::value_ptr(tmp));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -176,7 +211,7 @@ int main() {
         glUniform1i(glGetUniformLocation(program, "sampler2"), 1);
 
         glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
         std::this_thread::sleep_for(std::chrono::nanoseconds(15000));
