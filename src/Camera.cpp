@@ -69,3 +69,7 @@ void Camera::updateValues() {
     right = glm::normalize(glm::cross(direction, up));
     cameraUp = glm::normalize(glm::cross(right, direction));
 }
+
+const glm::vec3 Camera::getPosition() const {
+    return position;
+}
