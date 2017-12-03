@@ -73,3 +73,7 @@ void Camera::updateValues() {
 const glm::vec3 Camera::getPosition() const {
     return position;
 }
+
+const glm::vec3 Camera::getDirection() const {
+    return direction;
+}

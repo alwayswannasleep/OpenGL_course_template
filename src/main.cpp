@@ -267,6 +267,7 @@ int main() {
         glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(tmp));
         glUniformMatrix4fv(glGetUniformLocation(program, "inverseModelMatrix"), 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(tmp))));
         glUniform3fv(glGetUniformLocation(program, "cameraPosition"), 1, glm::value_ptr(camera.getPosition()));
+        glUniform3fv(glGetUniformLocation(program, "cameraDirection"), 1, glm::value_ptr(camera.getDirection()));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
