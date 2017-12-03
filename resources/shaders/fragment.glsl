@@ -13,7 +13,7 @@ out vec4 outColor;
 
 void main() {
     vec3 diffuseColor = mix(texture(sampler, textureCoordinates), texture(sampler2, textureCoordinates), 0.4).rgb;
-    vec3 ambientColor = diffuseColor * 0.05;
+    vec3 ambientColor = diffuseColor * 0.1;
     vec3 specularColor = vec3(1.0, 1.0, 1.0);
 
     vec3 lightPosition = cameraPosition;
@@ -25,7 +25,8 @@ void main() {
     vec3 viewDirection = normalize(objectPosition - cameraPosition);
     vec3 reflectDirection = reflect(lightDirection, normal);
 
-    float specularFactor = pow(max(dot(-viewDirection, reflectDirection), 0.0), 32);
+    float shininess = 32;
+    float specularFactor = pow(max(dot(-viewDirection, reflectDirection), 0.0), shininess);
     specularColor = 0.5 * specularColor * specularFactor;
 
     float phi = cos(radians(12.0));
